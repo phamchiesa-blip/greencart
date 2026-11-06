@@ -45,8 +45,8 @@ const NavBar = () => {
                     <div className="relative group">
                         <img src={assets.profile_icon} alt="User" className="w-10" />
                         <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow-md border border-gray-200 rounded-md py-2.5 z-40 text-sm">
-                            <li onClick={() => navigate("my-orders")} className="p-1.5 pl-3 hover:bg-primary/10 cursor-pointer">My Orders</li>
-                            <li onClick={logout} className="p-1.5 pl-3 hover:bg-primary/10 cursor-pointer">Logout</li>
+                            <li onClick={() => navigate("my-orders")} className="flex px-8 py-2 pl-3 hover:bg-primary/10 cursor-pointer">MyOrders</li>
+                            <li onClick={logout} className="flex px-8 py-2 pl-3 hover:bg-primary/10 cursor-pointer">Logout</li>
                         </ul>
                     </div>
                 )}
