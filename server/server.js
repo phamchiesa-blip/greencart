@@ -5,11 +5,16 @@ import cors from 'cors'
 import connectDB from "./config/db.js";
 import userRouter from "./router/UserRoute.js";
 import sellerRouter from "./router/sellerRoute.js";
+import connectCloudinary from './config/cloudinary.js'
+import productRouter from "./router/productRoute.js";
+import cartRouter from './router/cartRoute.js'
+import addressRouter from "./router/addressRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 await connectDB();
+await connectCloudinary();
 
 // Allow multiple origin 
 const allowOrigins = ['http://localhost:5173']; 
@@ -25,6 +30,10 @@ app.get("/", (req, res) => {
 
 app.use('/api/user', userRouter);
 app.use('/api/seller', sellerRouter);
+app.use('/api/product', productRouter);
+app.use('/api/cart', cartRouter);
+app.use('/api/address', addressRouter);
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
