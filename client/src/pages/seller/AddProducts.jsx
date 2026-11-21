@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {assets, categories} from '../../assets/assets'
+import {useAppContext} from '../../context/AppContext'
+import toast from "react-hot-toast";
 
 const AddProducts = () => {
   const [files, setFiles] = useState([]);
@@ -7,10 +9,46 @@ const AddProducts = () => {
   const [desc, setDesc] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
-  const [offerrice, setOfferPrice] = useState('');
+  const [offerPrice, setOfferPrice] = useState('');
+
+  const {axios} = useAppContext();
 
   const onSubmitHandler = async (e) => {
-    e.preventDefault();
+    try {
+        e.preventDefault();
+        const productData = {
+            name,
+            description: desc.split('\n'),
+            category,
+            price,
+            offerPrice
+        }
+
+        const formData = new FormData();
+        formData.append('productData', JSON.stringify(productData));
+        for (let i = 0; i < files.length; i++) {
+            if (files[i]) {
+                formData.append('images', files[i]);
+            }
+        }
+
+        const {data} = await axios.post('/api/product/add', formData);
+
+        if(data.success) {
+            toast.success(data.message);
+            setName('');
+            setDesc('');
+            setCategory('');
+            setPrice('');
+            setOfferPrice('');
+            setFiles([]);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.message);
+    }
+   
   }
 
     return (
@@ -63,7 +101,7 @@ const AddProducts = () => {
                     </div>
                     <div className="flex-1 flex flex-col gap-1 w-32">
                         <label className="text-base font-medium" htmlFor="offer-price">Offer Price</label>
-                        <input onChange={e => setOfferPrice(e.target.value)} value={offerrice}
+                        <input onChange={e => setOfferPrice(e.target.value)} value={offerPrice}
                         id="offer-price" type="number" placeholder="0" className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40" required />
                     </div>
                 </div>

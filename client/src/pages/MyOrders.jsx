@@ -1,19 +1,29 @@
 import { useEffect, useState } from "react"
 import {useAppContext} from '../context/AppContext'
-import { dummyOrders } from "../assets/assets";
+
 
 const MyOrders = () => {
     const [myOrders, setMyOrders] = useState([]);
-    const {currency} = useAppContext();
+    const {currency, axios, user} = useAppContext();
 
     const fetchMyOrders = async() => {
-        setMyOrders(dummyOrders);
+       try {
+        const {data} = await axios.get('/api/order/user');
+        if(data.success) {
+            setMyOrders(data.orders);
+        }
+       } catch (error) {
+        console.log(error);
+       }
     }
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        fetchMyOrders();
-    }, []);
+        if(user) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchMyOrders();
+        } 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
   return (
     <div>
@@ -45,7 +55,7 @@ const MyOrders = () => {
                         <div className="flex flex-col justify-center md:ml-8 mb-4 md:mb-0">
                             <p className="">Quantity: {item.quantity || "1"}</p>
                             <p className="">Status: {order.status}</p>
-                            <p className="">Date: {new Date(order.creatAt).toLocaleDateString()}</p>
+                            <p className="">Date: {new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
                         <p className="text-primary text-lg font-medium">
                             Amount: {currency} {item.product.offerPrice * item.quantity}

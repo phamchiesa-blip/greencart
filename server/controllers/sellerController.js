@@ -7,7 +7,7 @@ export const sellerLogin = async (req, res) => {
     const {email, password} = req.body;
     
     if(!email || !password) {
-        res.json({success: false, message: "Fill full fields!!!"});
+        return res.json({success: false, message: "Fill full fields!!!"});
     }
 
     if(password === process.env.SELLER_PASSWORD && email === process.env.SELLER_EMAIL) {
@@ -23,7 +23,7 @@ export const sellerLogin = async (req, res) => {
 
     return res.json({success: true, message: "Logged In"});
     } else {
-        return res.json({success: true, message: "Logged In Fail"});
+        return res.json({success: false, message: "Logged In Fail"});
     }
     } catch (error) {
         console.log(error.message)
@@ -32,9 +32,8 @@ export const sellerLogin = async (req, res) => {
 }
 
 // Seller isAuth: /api/seller/is-auth
-export const isSellerAuth = async(res) => {
+export const isSellerAuth = async (req, res) => {
     try {
-        
         return res.json({success: true});
     } catch (error) {
         console.log(error.message)

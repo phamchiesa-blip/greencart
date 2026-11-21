@@ -2,14 +2,26 @@ import React, { useEffect } from 'react'
 import {NavLink} from 'react-router-dom'
 import {assets} from '../assets/assets'
 import { useAppContext } from '../context/AppContext.jsx'
+import toast from 'react-hot-toast'
 
 const NavBar = () => {
     const [open, setOpen] = React.useState(false);
-    const {user, setUser, setShowUserLogin, setSearchQuery, searchQuery, navigate, getCartCount} = useAppContext();
+    const {user, setUser, setShowUserLogin, setSearchQuery, 
+        searchQuery, navigate, getCartCount, axios} = useAppContext();
 
     const logout = async () => {
-        setUser(null);
-        navigate('/');
+        try {
+            const {data} = await axios.get('/api/user/logout');
+            if(data.success) {
+                toast.success(data.message);
+                setUser(null);
+                navigate('/');
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {
@@ -34,7 +46,7 @@ const NavBar = () => {
 
                 <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
                     <input onChange={(e) => setSearchQuery(e.target.value)}
-                     className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
+                    className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
                     <img src={assets.search_icon} alt="Search" className="w-4 h-4" />
                 </div>
 
@@ -49,13 +61,15 @@ const NavBar = () => {
                         Login
                     </button>
                 ) : (
-                    <div className="relative group">
-                        <img src={assets.profile_icon} alt="User" className="w-10" />
-                        <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow-md border border-gray-200 rounded-md py-2.5 z-40 text-sm">
-                            <li onClick={() => navigate("my-orders")} className="flex px-8 py-2 pl-3 hover:bg-primary/10 cursor-pointer">MyOrders</li>
-                            <li onClick={logout} className="flex px-8 py-2 pl-3 hover:bg-primary/10 cursor-pointer">Logout</li>
-                        </ul>
-                    </div>
+                    <>
+                        <div className="relative group flex">
+                            <img src={assets.profile_icon} alt="User" className="w-10" />
+                            <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow-md border border-gray-200 rounded-md py-2.5 z-40 text-sm">
+                                <li onClick={() => navigate("my-orders")} className="flex px-8 py-2 pl-3 hover:bg-primary/10 cursor-pointer">MyOrders</li>
+                                <li onClick={logout} className="flex px-8 py-2 pl-3 hover:bg-primary/10 cursor-pointer">Logout</li>
+                            </ul>
+                        </div>
+                    </>
                 )}
             </div>
 
@@ -93,7 +107,7 @@ const NavBar = () => {
                         Login
                     </button>
                     ) : (
-                        <button onClick={() => { logout(); }}
+                        <button onClick={() => { logout() }}
                          className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
                         Logout
                     </button>
