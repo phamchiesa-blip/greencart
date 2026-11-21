@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 const Cart = () => {
     const {products, currency, cartItems, removeFromCart, getCartCount, 
-        getCartAmount, updateCartItem, navigate, axios, user, setCartItems} = useAppContext();
+        getCartAmount, updateCartItem, navigate, axios, user, setCartItems, setShowUserLogin} = useAppContext();
 
     const [cartArray, setCartArray] = useState([]);
     const [addresses, setAddress] = useState([]);
@@ -44,6 +44,11 @@ const Cart = () => {
 
     const placeOrder = async() => {
         try {
+            if(!user) {
+                setShowUserLogin(true);
+                return toast.error("Please login to place an order!");
+            }
+
             if(!selectedAddress) {
                 return toast.error("Please select an address!");
             }
@@ -53,7 +58,7 @@ const Cart = () => {
                     userId: user._id,
                     items: cartArray.map(item => ({product: item._id, quantity: item.quantity})),
                     address: selectedAddress._id 
-                });
+            });
 
             if(data.success) {
                toast.success(data.message);
@@ -62,6 +67,18 @@ const Cart = () => {
             } else {
                 toast.error(data.message);
             }   
+            } else {
+            const {data} = await axios.post("/api/order/stripe", {
+                    userId: user._id,
+                    items: cartArray.map(item => ({product: item._id, quantity: item.quantity})),
+                    address: selectedAddress._id 
+            });
+
+            if(data.success) {
+               window.location.replace(data.url);
+            } else {
+                toast.error(data.message);
+            }  
             }
         } catch (error) {
             toast.error(error.message);
@@ -158,7 +175,15 @@ const Cart = () => {
                                     {address.street}, {address.city ? `${address.city}, ` : ''}{address.state}, {address.country}
                                 </p>
                                )) }
-                                <p onClick={() => navigate("/add-address")} className="text-primary
+                                <p onClick={() => {
+                                    if (!user) {
+                                        setShowUserLogin(true);
+                                        toast.error("Please login to add address");
+                                    } else {
+                                        navigate("/add-address");
+                                        scrollTo(0, 0);
+                                    }
+                                }} className="text-primary
                                  text-center cursor-pointer p-2 hover:bg-primary-dull">
                                     Add address
                                 </p>

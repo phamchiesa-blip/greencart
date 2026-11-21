@@ -16,7 +16,7 @@ const InputField = ({type, placeholder, name, handleChange, address}) => (
 
 
 const AddAddress = () => {
-  const {axios, user, navigate} = useAppContext();
+  const {axios, user, navigate, authLoading, setShowUserLogin} = useAppContext();
   const [address, setAddress] = useState({
     firstName: "",
     lastName: "",
@@ -48,15 +48,17 @@ const AddAddress = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.success(error.message);
+      toast.error(error.message);
     }
   }
 
   useEffect(() => {
-    if(!user) {
+    if (!authLoading && !user) {
+      setShowUserLogin(true);
+      toast.error("Please login to add address");
       navigate('/cart');
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate, setShowUserLogin]);
 
   return (
     <div className="mt-16 pb-16">

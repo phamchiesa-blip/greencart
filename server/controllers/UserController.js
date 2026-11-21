@@ -32,10 +32,16 @@ export const register = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000, // expiresIn: "7d"
         });
 
-        return res.json({success: true,user: {
-            message: "User has already created!", 
-            email: user.email,
-            name: user.name}});
+        return res.json({
+            success: true,
+            user: {
+                _id: user._id,
+                email: user.email,
+                name: user.name,
+                cartItems: user.cartItems || {}
+            },
+            message: "User created successfully!"
+        });
     } catch (error) {
         console.log(error.message)
         return res.json({success: false, message: error.message});
@@ -72,10 +78,16 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000, // expiresIn: "7d"
         });
 
-        return res.json({success: true,user: {
-            message: "User has already created!", 
-            email: user.email,
-        }});
+        return res.json({
+            success: true,
+            user: {
+                _id: user._id,
+                email: user.email,
+                name: user.name,
+                cartItems: user.cartItems || {}
+            },
+            message: "Logged in successfully!"
+        });
     } catch (error) {
         console.log(error.message)
         return res.json({success: false, message: error.message});
